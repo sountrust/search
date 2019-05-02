@@ -63,6 +63,10 @@ const server = http.createServer(app).listen(process.env.PORT, function() {
 // Compression
 app.use(compression());
 
+// test craler
+
+//const crawler = require('./src/services/crawler')
+crawler.parseUrl('http://api.opencorporates.com/documentation/API-Reference')
 /**
  * Graceful shutdown
  * @returns {*|void}
