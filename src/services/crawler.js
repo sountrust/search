@@ -12,4 +12,4 @@ function getInfos(url) {
   // TODO extraire les meta data et les stocker dans la base de donnee
 
 }
-module.exports.paseUrl=getInfos
+module.exports.parseUrl=getInfos
