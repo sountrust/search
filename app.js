@@ -21,14 +21,14 @@ const session = require('express-session');
 
 // Format logs
 if (app.get('env') === 'development') {
-  app.use(function(req, res, next) {
-    logger.debug('%s %s:', _.toUpper(req.method), req.originalUrl);
-    logger.debug('- Headers:', JSON.stringify(req.headers));
-    logger.debug('- Params:', JSON.stringify(req.params));
-    logger.debug('- Query:', JSON.stringify(req.query));
-    logger.debug('- Body:', JSON.stringify(req.body));
-    return next();
-  });
+    app.use(function(req, res, next) {
+        logger.debug('%s %s:', _.toUpper(req.method), req.originalUrl);
+        logger.debug('- Headers:', JSON.stringify(req.headers));
+        logger.debug('- Params:', JSON.stringify(req.params));
+        logger.debug('- Query:', JSON.stringify(req.query));
+        logger.debug('- Body:', JSON.stringify(req.body));
+        return next();
+    });
 }
 
 // Initialisation de repertoire public
@@ -36,9 +36,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session
 app.use(session({
-  resave: false,
-  saveUninitialized: false,
-  secret: process.env.SESSION
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.SESSION
 }));
 
 // CORS: same origin policy
@@ -49,7 +49,7 @@ app.use(bodyParser.json());
 
 // Parse urlencoded requests' body
 app.use(bodyParser.urlencoded({
-  extended: true
+    extended: true
 }));
 
 // Router
@@ -57,7 +57,7 @@ app.use(require('./src/routes'));
 
 // Create server
 const server = http.createServer(app).listen(process.env.PORT, function() {
-  logger.info('Lancement du moteur de recherche' + process.env.PORT + ' in ' + app.get('env') + ' mode');
+    logger.info('Lancement du moteur de recherche' + process.env.PORT + ' in ' + app.get('env') + ' mode');
 });
 
 // Compression
@@ -65,20 +65,20 @@ app.use(compression());
 
 // test crawler
 
-const crawler = require('./src/services/crawler')
-crawler.parseUrl('https://www.lessatellites.fr')
+const crawler = require('./src/services/crawler');
+crawler.parseUrl('https://www.lessatellites.fr');
 /**
  * Graceful shutdown
  * @returns {*|void}
  * @private
  */
 function _shutdown() {
-  logger.info('App termination...');
-  return server.close(function() {
-    logger.info('http server closed');
-    logger.info('App terminated');
-    return process.exit(0);
-  });
+    logger.info('App termination...');
+    return server.close(function() {
+        logger.info('http server closed');
+        logger.info('App terminated');
+        return process.exit(0);
+    });
 }
 
 process.on('SIGINT', _shutdown);
