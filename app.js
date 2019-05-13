@@ -17,8 +17,7 @@ const compression = require('compression');
 const session = require('express-session');
 
 const dataUrls = {
-    url: 'https://www.lessatellites.fr',
-    title: 'Les Satellites'
+    url: 'https://stackoverflow.com'
 };
 
 // init databases

@@ -16,7 +16,9 @@ const URLS = db.define('urls ', {
     image: Sequelize.STRING,
     twitter_description: Sequelize.STRING,
     twitter_tittle: Sequelize.STRING,
-    twitter_site: Sequelize.STRING
+    twitter_site: Sequelize.STRING,
+    application_name: Sequelize.STRING,
+    type: Sequelize.STRING
 });
 
 
@@ -31,7 +33,8 @@ function createUrl(data) {
         image: data.image,
         twitter_description: data.twitter_description,
         twitter_tittle: data.twitter_tittle,
-        twitter_site: data.twitter_site
+        twitter_site: data.twitter_site,
+        application_name: data.application_name
     }).then(function (res) {
         logger.debug('Nouveau lien ajoute', res);
     });
