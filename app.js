@@ -16,8 +16,16 @@ const app = express();
 const compression = require('compression');
 const session = require('express-session');
 
+const dataUrls = {
+    url: 'https://www.lessatellites.fr',
+    title: 'Les Satellites'
+};
+
 // init databases
-// require('./src/services/db');
+//const connect = require('./src/models/index')();
+require('./src/models/urls')();
+//require('./src/models/metas')();
+
 
 // Format logs
 if (app.get('env') === 'development') {
@@ -56,17 +64,20 @@ app.use(bodyParser.urlencoded({
 app.use(require('./src/routes'));
 
 // Create server
-const server = http.createServer(app).listen(process.env.PORT, function() {
-    logger.info('Lancement du moteur de recherche' + process.env.PORT + ' in ' + app.get('env') + ' mode');
+const server = http.createServer(app).listen(process.env.PORT, function () {
+        logger.info('Lancement du moteur de recherche' + process.env.PORT + ' in ' + app.get('env') + ' mode');
 });
 
 // Compression
 app.use(compression());
 
 // test crawler
-
 const crawler = require('./src/services/crawler');
-crawler.parseUrl('https://www.lessatellites.fr');
+crawler.parseUrl(dataUrls.url);
+
+//Write into data base
+
+
 /**
  * Graceful shutdown
  * @returns {*|void}
