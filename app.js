@@ -16,12 +16,15 @@ const app = express();
 const compression = require('compression');
 const session = require('express-session');
 
-const dataUrls = {
-    url: 'https://stackoverflow.com'
-};
+const dataUrls = [
+    'https://www.societe.com',
+    'https://www.franceinter.fr',
+    'https://www.fip.fr',
+    'http://www.radiomeuh.com'
+];
 
 // init databases
-//const connect = require('./src/models/index')();
+
 require('./src/models/urls')();
 //require('./src/models/metas')();
 
@@ -76,7 +79,9 @@ app.use(compression());
 
 // test crawler
 const crawler = require('./src/services/crawler');
-crawler.parseUrl(dataUrls.url);
+/*for (let i = 0; i < dataUrls.length; i++) {
+    crawler.parseUrl(dataUrls[i]);
+}*/
 
 //Write into data base
 

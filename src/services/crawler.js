@@ -7,53 +7,94 @@ const logger = require('../libs/logger');
 const urls = require('../models/urls');
 //const metas = require('../models/metas');
 
+
+//Organise list to match URLS format
+function columnFormat(metadataList) {
+    const result = {};
+    for (let i = 0; i < metadataList.length; i++) {
+        switch (metadataList[i].type) {
+            case "description":
+                result['description_name'] = metadataList[i].content;
+                break;
+            case "twitter:site":
+                result['twitter_site'] = metadataList[i].content;
+                break;
+            case "twitter:title":
+                result['twitter_title'] = metadataList[i].content;
+                break;
+            case "og:title":
+                result["title"] = metadataList[i].content;
+                break;
+            case "og:locale:alternate":
+                result['locale_alt'] = metadataList[i].content;
+                break;
+            case "twitter:description":
+                result['twitter_description'] = metadataList[i].content;
+                break;
+            case "og:type":
+                result['type'] = metadataList[i].content;
+                break;
+            case "og:url":
+                result['url'] = metadataList[i].content;
+                break;
+            case "og:site_name":
+                result['site_name'] = metadataList[i].content;
+                break;
+            case "og:image":
+                result['image'] = metadataList[i].content;
+                break;
+            case "og:locale":
+                result['locale'] = metadataList[i].content;
+                break;
+            case "og:description":
+                result['description_prop'] = metadataList[i].content;
+                break;
+            case "application-name":
+                result['application_name'] = metadataList[i].content;
+                break;
+            default:
+                break;
+        }
+    }
+    return result;
+}
+
 function getInfos(dataUrl) {
     logger.info('Parsing URL [%s]', dataUrl);
     const response = request('GET', dataUrl);
     const $ = cheerio.load(response.getBody());
     // TODO extraire les meta data et les stocker dans la base de donnee
 
-    const parsedMeta = [];
+
+    let metadataList = [];
     //Crawl every meta elements
+
     $('meta').each(function () {
         const a = $(this);
-        //Retrieve name
-        const name = a.attr('name');
         //Retrieve property
         const prop = a.attr('property');
         //Retrieve content
         const cont = a.attr('content');
-        const metadata = {
-            name: name,
-            property: prop,
-            content: cont
-        };
-        // Push meta-data into parsedResults array
-        parsedMeta.push(metadata);
+        //Retrieve name
+        const name = a.attr('name');
+        //choose from name and property the meta content
+        if (prop && name) {
+            metadataList.push({type: name, content: cont})
+        } else if (prop) {
+            metadataList.push({type: prop, content: cont})
+        } else if (name) {
+            metadataList.push({type: name, content: cont})
+
+        } else {
+            logger.error('no property or name');
+        }
     });
-    const url = searchContent(parsedMeta);
-    const data = {
-        url: url,
-        title: data.title,
-        locale: data.locale,
-        locale_alt: data.locale_alt,
-        description: data.description,
-        site_name: data.site_name,
-        image: data.image,
-        twitter_description: data.twitter_description,
-        twitter_tittle: data.twitter_tittle,
-        twitter_site: data.twitter_site,
-        application_name: data.application_name
-    };
 
-    //urls.createUrl(data);
-    //metas.storeMetas(data);
-    console.log(parsedMeta);
-    return parsedMeta;
+    let metadata = columnFormat(metadataList);
+    urls.createUrl(metadata);
+    //metas.storeMetas(metadata);
+    console.log(metadata);
 }
 
-function searchContent(data){
-
-}
 
 module.exports.parseUrl = getInfos;
