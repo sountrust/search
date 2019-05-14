@@ -17,10 +17,20 @@ const compression = require('compression');
 const session = require('express-session');
 
 const dataUrls = [
-    'https://www.societe.com',
-    'https://www.franceinter.fr',
-    'https://www.fip.fr',
-    'http://www.radiomeuh.com'
+    'https://www.lessatellites.fr/',
+    'https://amadeus.com/en',
+    'https://www.francetelevisions.fr/',
+    'https://www.miage.net/',
+    'https://www.bbc.com/',
+    'https://www.lepoint.fr ',
+    'https://www.tf1.fr/',
+    'https://www.franceinter.fr/',
+    'https://www.fip.fr/',
+    'http://www.radiomeuh.com/',
+    'https://www.oecd.org/france/',
+    'https://www.un.org/fr/',
+    'https://www.gouvernement.fr',
+    'https://www.fbi.gov'
 ];
 
 // init databases
