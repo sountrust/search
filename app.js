@@ -21,7 +21,6 @@ const dataUrls = [
     'https://amadeus.com/en',
     'https://www.francetelevisions.fr/',
     'https://www.miage.net/',
-    'https://www.bbc.com/',
     'https://www.lepoint.fr ',
     'https://www.tf1.fr/',
     'https://www.franceinter.fr/',
@@ -32,6 +31,8 @@ const dataUrls = [
     'https://www.gouvernement.fr',
     'https://www.fbi.gov'
 ];
+
+logger.info(dataUrls);
 
 // init databases
 
@@ -45,7 +46,7 @@ app.set('views', __dirname + '/views');
 
 // Format logs
 if (app.get('env') === 'development') {
-    app.use(function(req, res, next) {
+    app.use(function (req, res, next) {
         logger.debug('%s %s:', _.toUpper(req.method), req.originalUrl);
         logger.debug('- Headers:', JSON.stringify(req.headers));
         logger.debug('- Params:', JSON.stringify(req.params));
@@ -81,17 +82,35 @@ app.use(require('./src/routes'));
 
 // Create server
 const server = http.createServer(app).listen(process.env.PORT, function () {
-        logger.info('Lancement du moteur de recherche' + process.env.PORT + ' in ' + app.get('env') + ' mode');
+    logger.info('Lancement du moteur de recherche' + process.env.PORT + ' in ' + app.get('env') + ' mode');
 });
 
 // Compression
 app.use(compression());
 
 // test crawler
+
 const crawler = require('./src/services/crawler');
-/*for (let i = 0; i < dataUrls.length; i++) {
-    crawler.parseUrl(dataUrls[i]);
-}*/
+
+getAllDataFromUrlsArray(dataUrls);
+
+async function getAllDataFromUrlsArray(urls) {
+    for (let i = 0; i < urls.length; i++) {
+        //crawler.parseUrl(urls);
+        const hl = crawler.gethref(urls[i]);
+        //logger.info(hl);
+        await addHref(hl);
+    }
+}
+
+function addHref(href) {
+    if (href !== undefined) {
+        for (let i = 0; i < href.length; i++) {
+            //logger.info(href[i]);
+            crawler.parseUrl(href[i]);
+        }
+    }
+}
 
 //Write into data base
 
@@ -103,7 +122,7 @@ const crawler = require('./src/services/crawler');
  */
 function _shutdown() {
     logger.info('App termination...');
-    return server.close(function() {
+    return server.close(function () {
         logger.info('http server closed');
         logger.info('App terminated');
         return process.exit(0);

@@ -59,42 +59,82 @@ function columnFormat(metadataList) {
     return result;
 }
 
-function getInfos(dataUrl) {
-    logger.info('Parsing URL [%s]', dataUrl);
-    const response = request('GET', dataUrl);
+function filterItems(arr, query) {
+    try {
+        return arr.filter(function (el) {
+            return el.indexOf(query) !== -1;
+        })
+    } catch
+        (e) {
+        logger.error(e);
+    }
+}
+
+function getUrlsFromSite(hrefList) {
+    const response = request('GET', hrefList);
     const $ = cheerio.load(response.getBody());
-    // TODO extraire les meta data et les stocker dans la base de donnee
 
+    //Crawl every anchor elements
+    let list = [];
+    $('a').each(function () {
+        const l = $(this);
+        const href = l.attr('href');
+        list.push(href);
+    })
 
-    let metadataList = [];
-    //Crawl every meta elements
+    const hreflist = filterItems(list, 'https');
+    return hreflist;
+}
 
-    $('meta').each(function () {
-        const a = $(this);
-        //Retrieve property
-        const prop = a.attr('property');
-        //Retrieve content
-        const cont = a.attr('content');
-        //Retrieve name
-        const name = a.attr('name');
-        //choose from name and property the meta content
-        if (prop && name) {
-            metadataList.push({type: name, content: cont})
-        } else if (prop) {
-            metadataList.push({type: prop, content: cont})
-        } else if (name) {
-            metadataList.push({type: name, content: cont})
+function getInfos(dataUrl) {
+    try{
+        logger.info('Parsing URL [%s]', dataUrl);
+        const response = request('GET', dataUrl);
+        if ((response.statusCode !== 404) && (response.statusCode !== 401)){
+            const $ = cheerio.load(response.getBody());
 
-        } else {
-            logger.error('no property or name');
+            // TODO extraire les meta data et les stocker dans la base de donnee
+
+            //Crawl every meta elements
+            let metadataList = [];
+            $('meta').each(function () {
+                const a = $(this);
+                //Retrieve property
+                const prop = a.attr('property');
+                //Retrieve content
+                const cont = a.attr('content');
+                //Retrieve name
+                const name = a.attr('name');
+                //choose from name and property the meta content
+                if (prop && name) {
+                    metadataList.push({type: name, content: cont})
+                } else if (prop) {
+                    metadataList.push({type: prop, content: cont})
+                } else if (name) {
+                    metadataList.push({type: name, content: cont})
+
+                } else {
+                    logger.error('no property or name');
+                }
+            })
+
+            let metadata = columnFormat(metadataList);
+            urls.createUrl(metadata);
+            //metas.storeMetas(metadata);
+            console.log(metadata);
+        }else{
+            logger.error("erreur 404");
         }
-    });
 
-    let metadata = columnFormat(metadataList);
-    urls.createUrl(metadata);
-    //metas.storeMetas(metadata);
-    console.log(metadata);
+
+
+    }catch
+        (e) {
+        logger.error(e);
+    }
 }
 
 
 module.exports.parseUrl = getInfos;
+module.exports.gethref = getUrlsFromSite;
+
